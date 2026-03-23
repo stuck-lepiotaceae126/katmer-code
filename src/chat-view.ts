@@ -501,11 +501,11 @@ export class ClaudeChatView extends ItemView {
         this.emptyState.empty();
         this.emptyState.createDiv({ cls: "claude-native-empty-title", text: "Claude Code CLI not found" });
         const setup = this.emptyState.createDiv("claude-native-empty-setup");
-        setup.createEl("p").createEl("strong", { text: "Step 1: Install Claude Code" });
+        setup.createEl("p").createEl("strong", { text: "Step 1: install Claude Code" });
         setup.createEl("pre", { text: "npm install -g @anthropic-ai/claude-code" });
-        setup.createEl("p").createEl("strong", { text: "Step 2: Log in (run once in terminal)" });
+        setup.createEl("p").createEl("strong", { text: "Step 2: log in (run once in terminal)" });
         setup.createEl("pre", { text: "claude" });
-        setup.createEl("p").createEl("strong", { text: "Step 3: Reload this plugin" });
+        setup.createEl("p").createEl("strong", { text: "Step 3: reload this plugin" });
         setup.createEl("p", { cls: "claude-native-empty-hint", text: "If Claude is installed but not found, set the full path in plugin settings." });
       }
       if (this.statusBar) {

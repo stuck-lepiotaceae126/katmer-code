@@ -111,7 +111,7 @@ export class ClaudeNativeSettingTab extends PluginSettingTab {
     // ── Skills ──
     new Setting(containerEl).setName("Academic skills").setHeading();
     containerEl.createEl("p", {
-      text: "Enable skills to add slash commands to Claude Code. Enabled skills are installed to ~/.claude/commands/ and available in all sessions.",
+      text: "Enable skills to add slash commands. Enabled skills are installed to ~/.claude/commands/ and available in all sessions.",
       cls: "setting-item-description",
     });
 

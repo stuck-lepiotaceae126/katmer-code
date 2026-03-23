@@ -203,7 +203,7 @@ export default class ClaudeNativePlugin extends Plugin {
 
           const openBtn = btnRow.createEl("button", {
             cls: "katmer-report-notice-btn katmer-report-notice-btn-primary",
-            text: "Open in Obsidian",
+            text: "Open in app",
           });
           openBtn.addEventListener("click", () => { void this.openReport(fullPath); notice.hide(); });
 
