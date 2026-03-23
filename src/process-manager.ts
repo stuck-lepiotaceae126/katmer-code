@@ -300,12 +300,10 @@ export class ProcessManager {
     };
   }
 
-  /** Resolve model string and betas for SDK options */
-  private resolveModel(): { model: string; betas?: ("context-1m-2025-08-07")[] } {
+  /** Resolve model string and betas for SDK options.
+   * Pass model string as-is — CLI handles [1m] suffix natively for Opus/Sonnet 4.6. */
+  private resolveModel(): { model: string } {
     const model = this.model || this.settings.defaultModel || "sonnet";
-    if (model === "opus[1m]") {
-      return { model: "opus", betas: ["context-1m-2025-08-07"] };
-    }
     return { model };
   }
 
@@ -321,7 +319,7 @@ export class ProcessManager {
 
   /** Build SDK query options */
   private buildOptions(): Options {
-    const { model, betas } = this.resolveModel();
+    const { model } = this.resolveModel();
     const permMode = this.settings.permissionMode || "acceptEdits";
     const cliPath = this.getCliPath();
 
@@ -357,10 +355,6 @@ export class ProcessManager {
         return { behavior: "deny" as const, message: "User denied" };
       } : undefined,
     };
-
-    if (betas) {
-      options.betas = betas;
-    }
 
     // Always-allowed tools (including all MCP tools)
     const allowed = [

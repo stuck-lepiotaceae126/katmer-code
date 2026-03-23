@@ -1458,7 +1458,7 @@ export class ClaudeChatView extends ItemView {
         this.session.cacheReadTokens = event.usage.cache_read_input_tokens || 0;
         this.session.cacheCreationTokens = event.usage.cache_creation_input_tokens || 0;
       }
-      // Extract context window size from modelUsage (only window, NOT tokens — those are aggregate)
+      // Extract context window size from modelUsage
       const raw = event as unknown as Record<string, unknown>;
       if (raw.modelUsage && typeof raw.modelUsage === "object") {
         const models = raw.modelUsage as Record<string, { contextWindow?: number }>;
