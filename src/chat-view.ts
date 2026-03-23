@@ -26,8 +26,8 @@ import { MODEL_LABELS, EFFORT_LABELS, SKILL_CATALOG } from "./types";
 /** Get file path from Electron webUtils or legacy File.path */
 function getFilePathFromFile(f: File): string | undefined {
   try {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const { webUtils } = require("electron") as { webUtils: { getPathForFile(f: File): string } };
+    const electron = (window as unknown as { require: (m: string) => Record<string, unknown> }).require("electron");
+    const webUtils = electron.webUtils as { getPathForFile(f: File): string };
     return webUtils.getPathForFile(f);
   } catch {
     return (f as File & { path?: string }).path;
@@ -651,35 +651,35 @@ export class ClaudeChatView extends ItemView {
     let icon = "loader";
 
     if (toolName === "Read" && input.file_path) {
-      const path = String(input.file_path);
+      const path = typeof input.file_path === "string" ? input.file_path : "";
       detail = path.split("/").pop() || path;
       icon = "file-text";
     } else if (toolName === "Edit" && input.file_path) {
-      const path = String(input.file_path);
+      const path = typeof input.file_path === "string" ? input.file_path : "";
       detail = path.split("/").pop() || path;
       icon = "pencil";
     } else if (toolName === "Write" && input.file_path) {
-      const path = String(input.file_path);
+      const path = typeof input.file_path === "string" ? input.file_path : "";
       detail = path.split("/").pop() || path;
       icon = "file-plus";
     } else if (toolName === "Bash" && input.command) {
-      detail = String(input.command).slice(0, 50);
+      detail = typeof input.command === "string" ? input.command : "".slice(0, 50);
       icon = "terminal";
     } else if (toolName === "WebFetch" && input.url) {
       try {
-        detail = new URL(String(input.url)).hostname;
+        detail = new URL(typeof input.url === "string" ? input.url : "").hostname;
       } catch {
-        detail = String(input.url).slice(0, 30);
+        detail = typeof input.url === "string" ? input.url : "".slice(0, 30);
       }
       icon = "globe";
     } else if (toolName === "WebSearch" && input.query) {
-      detail = String(input.query).slice(0, 40);
+      detail = typeof input.query === "string" ? input.query : "".slice(0, 40);
       icon = "search";
     } else if (toolName === "Grep" && input.pattern) {
-      detail = `"${String(input.pattern).slice(0, 25)}"`;
+      detail = `"${typeof input.pattern === "string" ? input.pattern : "".slice(0, 25)}"`;
       icon = "search";
     } else if (toolName === "Agent" && input.description) {
-      detail = String(input.description).slice(0, 40);
+      detail = typeof input.description === "string" ? input.description : "".slice(0, 40);
       icon = "cpu";
     } else if (toolName === "Thinking") {
       this.currentActivity = "Thinking…";
@@ -1835,7 +1835,7 @@ export class ClaudeChatView extends ItemView {
     // Only trigger showEditInEditor ONCE per edit (cumulative re-renders would re-trigger)
     if (!this.editDiffShown.has(tc.id)) {
       this.editDiffShown.add(tc.id);
-      this.showEditInEditor(filePath, oldStr, newStr, panel, statusSpan);
+      void this.showEditInEditor(filePath, oldStr, newStr, panel, statusSpan);
     }
   }
 
@@ -2063,13 +2063,13 @@ export class ClaudeChatView extends ItemView {
 
   /** Reset textarea height to auto (used after sending) */
   private resetInputHeight(): void {
-    this.inputEl.style.height = "auto";
+    this.inputEl.style.setProperty("height", "auto");
   }
 
   /** Auto-resize textarea to fit content */
   private autoResizeInput(): void {
-    this.inputEl.style.height = "auto";
-    this.inputEl.style.height = Math.min(this.inputEl.scrollHeight, 160) + "px";
+    this.inputEl.style.setProperty("height", "auto");
+    this.inputEl.style.setProperty("height", Math.min(this.inputEl.scrollHeight, 160) + "px");
   }
 
   private scrollToBottom(): void {
@@ -2100,14 +2100,14 @@ export class ClaudeChatView extends ItemView {
 
   private formatToolInput(name: string, input: Record<string, unknown>): string {
     if ((name === "Read" || name === "Edit" || name === "Write") && input.file_path) {
-      return String(input.file_path).split("/").pop() || "";
+      return typeof input.file_path === "string" ? input.file_path : "".split("/").pop() || "";
     }
     if (name === "Bash" && input.command) {
-      const cmd = String(input.command);
+      const cmd = typeof input.command === "string" ? input.command : "";
       return cmd.length > 50 ? cmd.slice(0, 50) + "…" : cmd;
     }
     if (name === "Grep" && input.pattern) return `/${input.pattern}/`;
-    if (name === "Glob" && input.pattern) return String(input.pattern);
+    if (name === "Glob" && input.pattern) return typeof input.pattern === "string" ? input.pattern : "";
     return "";
   }
 }

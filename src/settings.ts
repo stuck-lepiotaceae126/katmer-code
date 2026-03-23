@@ -15,7 +15,7 @@ export class ClaudeNativeSettingTab extends PluginSettingTab {
     containerEl.empty();
 
     // ── General ──
-    new Setting(containerEl).setName("KatmerCode settings").setHeading();
+    new Setting(containerEl).setName("General").setHeading();
 
     new Setting(containerEl)
       .setName("CLI path")

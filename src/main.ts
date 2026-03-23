@@ -7,8 +7,8 @@ import { inlineDiffField } from "./editor-extension";
 import { existsSync, writeFileSync, unlinkSync, mkdirSync, readFileSync, readdirSync, watch } from "fs";
 import { join } from "path";
 import { homedir } from "os";
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const { shell } = require("electron") as { shell: { openPath: (path: string) => Promise<string> } };
+// Electron shell — accessed via window.require (Obsidian's Electron runtime)
+const electronShell = (window as unknown as { require: (m: string) => Record<string, unknown> }).require("electron").shell as { openPath: (path: string) => Promise<string> };
 
 // Skill contents bundled at build time (esbuild loader: { ".md": "text" })
 // @ts-ignore
@@ -63,7 +63,7 @@ export default class ClaudeNativePlugin extends Plugin {
     this.registerView(VIEW_TYPE_CLAUDE, (leaf) => {
       const view = new ClaudeChatView(leaf, this.settings);
       // Wire up session saving
-      view.onSaveSession = (session) => this.saveSession(session);
+      view.onSaveSession = (session) => void this.saveSession(session);
       view.onShowSessionPicker = () => this.showSessionPicker();
       return view;
     });
@@ -109,6 +109,9 @@ export default class ClaudeNativePlugin extends Plugin {
 
     // CM6 inline diff extension
     this.registerEditorExtension([inlineDiffField]);
+
+    // @codemirror/merge tested — incompatible with Obsidian's CM6 (DeletionWidget viewport crash).
+    // Using custom StateField-based inline diff (editor-extension.ts).
 
     // Settings tab
     this.addSettingTab(new ClaudeNativeSettingTab(this.app, this));
@@ -166,7 +169,7 @@ export default class ClaudeNativePlugin extends Plugin {
         new Notice("No reports found in reports/");
         return;
       }
-      const modal = new ReportPickerModal(this.app, files, reportsDir, (fp) => this.openReport(fp));
+      const modal = new ReportPickerModal(this.app, files, reportsDir, (fp) => void this.openReport(fp));
       modal.open();
     } catch {
       new Notice("Could not read reports/");
@@ -209,7 +212,7 @@ export default class ClaudeNativePlugin extends Plugin {
             text: "Open in browser",
           });
           browserBtn.addEventListener("click", () => {
-            shell.openPath(fullPath);
+            void electronShell.openPath(fullPath);
             notice.hide();
           });
 
