@@ -16,8 +16,7 @@ export class ReportView extends ItemView {
   getDisplayText(): string { return this.fileName || "Report"; }
   getIcon(): string { return "file-chart"; }
 
-  async onOpen(): Promise<void> {
-    await Promise.resolve(); // satisfy async requirement
+  onOpen(): Promise<void> {
     const container = this.containerEl.children[1] as HTMLElement;
     container.empty();
     container.addClass("katmer-report-root");
@@ -26,6 +25,7 @@ export class ReportView extends ItemView {
       attr: { sandbox: "allow-scripts allow-same-origin", frameborder: "0" },
     });
     if (this.filePath) this.loadReport(this.filePath);
+    return Promise.resolve();
   }
 
   loadReport(filePath: string): void {
@@ -45,5 +45,5 @@ export class ReportView extends ItemView {
     }
   }
 
-  async onClose(): Promise<void> { await Promise.resolve(); }
+  onClose(): Promise<void> { return Promise.resolve(); }
 }

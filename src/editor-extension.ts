@@ -83,9 +83,9 @@ function reanchorChanges(changes: InlineChange[], doc: string): InlineChange[] {
       }
     }
     const idx = findNearest(doc, c.newText, c.from);
-    if (idx === -1) return { ...c, status: "rejected" as const };
+    if (idx === -1) return { ...c, status: "rejected" };
     const key = `${idx}:${idx + c.newText.length}`;
-    if (claimed.has(key)) return { ...c, status: "rejected" as const };
+    if (claimed.has(key)) return { ...c, status: "rejected" };
     claimed.add(key);
     return { ...c, from: idx, to: idx + c.newText.length };
   });
@@ -156,12 +156,12 @@ export const changeRegistry = StateField.define<InlineChange[]>({
       }
       if (effect.is(acceptChange)) {
         changes = changes.map(c =>
-          c.id === effect.value ? { ...c, status: "accepted" as const } : c
+          c.id === effect.value ? { ...c, status: "accepted" } : c
         );
       }
       if (effect.is(rejectChange)) {
         changes = changes.map(c =>
-          c.id === effect.value ? { ...c, status: "rejected" as const } : c
+          c.id === effect.value ? { ...c, status: "rejected" } : c
         );
       }
       if (effect.is(clearAllChanges)) {

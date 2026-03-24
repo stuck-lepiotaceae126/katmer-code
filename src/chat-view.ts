@@ -18,7 +18,6 @@ import type {
   ResultEvent,
   StreamDeltaEvent,
   ChatMessage,
-  ContentSegment,
   ToolCallInfo,
   SessionInfo,
   ClaudeNativeSettings,
@@ -162,8 +161,7 @@ export class ClaudeChatView extends ItemView {
   getDisplayText(): string { return "KatmerCode"; }
   getIcon(): string { return "cat"; }
 
-  async onOpen(): Promise<void> {
-    await Promise.resolve();
+  onOpen(): Promise<void> {
     const container = this.containerEl.children[1] as HTMLElement;
     container.empty();
     container.addClass("claude-native-root");
@@ -445,7 +443,7 @@ export class ClaudeChatView extends ItemView {
     });
 
     // Paste handler — images from clipboard
-    this.inputEl.addEventListener("paste", async (e) => {
+    this.inputEl.addEventListener("paste", (e) => {
       const items = e.clipboardData?.items;
       if (!items) return;
       for (const item of Array.from(items)) {
@@ -457,10 +455,12 @@ export class ClaudeChatView extends ItemView {
           const ext = item.type.split("/")[1] || "png";
           const tmpName = `paste-${Date.now()}.${ext}`;
           const tmpPath = join(tmpdir(), tmpName);
-          const buffer = Buffer.from(await blob.arrayBuffer());
-          writeFileSync(tmpPath, buffer);
-          this.attachedImages.push({ path: tmpPath, name: tmpName });
-          this.renderAttachmentCards();
+          void blob.arrayBuffer().then((ab) => {
+            const buffer = Buffer.from(ab);
+            writeFileSync(tmpPath, buffer);
+            this.attachedImages.push({ path: tmpPath, name: tmpName });
+            this.renderAttachmentCards();
+          }).catch(() => { /* paste handling failed */ });
         }
       }
     });
@@ -527,7 +527,8 @@ export class ClaudeChatView extends ItemView {
     });
 
     // Check CLI availability + pre-warm query
-    void this.checkCli().then(() => this.preWarmQuery());
+    void this.checkCli().then(() => this.preWarmQuery()).catch(() => { /* CLI check failed — handled in checkCli */ });
+    return Promise.resolve();
   }
 
   /** Start SDK query early so first message is instant */
@@ -582,13 +583,6 @@ export class ClaudeChatView extends ItemView {
   }
 
   // ── Skill Autocomplete ──
-
-  /** Fetch SDK commands lazily (once, after first session starts) */
-  private fetchSdkCommands(): void {
-    if (this.sdkCommandsFetched) return;
-    // Access the active query's supportedCommands — requires ProcessManager to expose it
-    // For now, we'll populate from the SDK on first system init event
-  }
 
   /** Called when system init event arrives — fetch SDK commands */
   private async loadSdkCommands(): Promise<void> {
@@ -717,36 +711,33 @@ export class ClaudeChatView extends ItemView {
     let detail = "";
     let icon = "loader";
 
-    if (toolName === "Read" && input.file_path) {
-      const path = typeof input.file_path === "string" ? input.file_path : "";
-      detail = path.split("/").pop() || path;
+    if (toolName === "Read" && typeof input.file_path === "string") {
+      detail = input.file_path.split("/").pop() || input.file_path;
       icon = "file-text";
-    } else if (toolName === "Edit" && input.file_path) {
-      const path = typeof input.file_path === "string" ? input.file_path : "";
-      detail = path.split("/").pop() || path;
+    } else if (toolName === "Edit" && typeof input.file_path === "string") {
+      detail = input.file_path.split("/").pop() || input.file_path;
       icon = "pencil";
-    } else if (toolName === "Write" && input.file_path) {
-      const path = typeof input.file_path === "string" ? input.file_path : "";
-      detail = path.split("/").pop() || path;
+    } else if (toolName === "Write" && typeof input.file_path === "string") {
+      detail = input.file_path.split("/").pop() || input.file_path;
       icon = "file-plus";
-    } else if (toolName === "Bash" && input.command) {
-      detail = typeof input.command === "string" ? input.command : "".slice(0, 50);
+    } else if (toolName === "Bash" && typeof input.command === "string") {
+      detail = input.command.slice(0, 50);
       icon = "terminal";
-    } else if (toolName === "WebFetch" && input.url) {
+    } else if (toolName === "WebFetch" && typeof input.url === "string") {
       try {
-        detail = new URL(typeof input.url === "string" ? input.url : "").hostname;
+        detail = new URL(input.url).hostname;
       } catch {
-        detail = typeof input.url === "string" ? input.url : "".slice(0, 30);
+        detail = input.url.slice(0, 30);
       }
       icon = "globe";
-    } else if (toolName === "WebSearch" && input.query) {
-      detail = typeof input.query === "string" ? input.query : "".slice(0, 40);
+    } else if (toolName === "WebSearch" && typeof input.query === "string") {
+      detail = input.query.slice(0, 40);
       icon = "search";
     } else if (toolName === "Grep" && typeof input.pattern === "string") {
-      detail = `"${typeof input.pattern === "string" ? input.pattern : "".slice(0, 25)}"`;
+      detail = `"${input.pattern.slice(0, 25)}"`;
       icon = "search";
-    } else if (toolName === "Agent" && input.description) {
-      detail = typeof input.description === "string" ? input.description : "".slice(0, 40);
+    } else if (toolName === "Agent" && typeof input.description === "string") {
+      detail = input.description.slice(0, 40);
       icon = "cpu";
     } else if (toolName === "Thinking") {
       this.currentActivity = "Thinking…";
@@ -775,7 +766,7 @@ export class ClaudeChatView extends ItemView {
     const iconEl = this.liveProgressEl.createSpan("cc-live-progress-icon");
     setIcon(iconEl, icon);
 
-    const textEl = this.liveProgressEl.createSpan({ cls: "cc-live-progress-text", text });
+    this.liveProgressEl.createSpan({ cls: "cc-live-progress-text", text });
     const timerEl = this.liveProgressEl.createSpan({ cls: "cc-live-progress-timer" });
 
     // Live elapsed timer
@@ -887,9 +878,9 @@ export class ClaudeChatView extends ItemView {
     });
   }
 
-  async onClose(): Promise<void> {
-    await Promise.resolve();
+  onClose(): Promise<void> {
     this.pm.destroy();
+    return Promise.resolve();
   }
 
   updateSettings(settings: ClaudeNativeSettings): void {
@@ -1255,9 +1246,9 @@ export class ClaudeChatView extends ItemView {
     // Compact boundary — show separator in chat
     if ((event as unknown as { subtype: string }).subtype === "compact_boundary") {
       const divider = this.chatContainer.createDiv("cc-compact-divider");
-      const line = divider.createDiv("cc-compact-line");
-      const label = divider.createSpan({ cls: "cc-compact-label", text: "Context compacted" });
-      const line2 = divider.createDiv("cc-compact-line");
+      divider.createDiv("cc-compact-line");
+      divider.createSpan({ cls: "cc-compact-label", text: "Context compacted" });
+      divider.createDiv("cc-compact-line");
       this.scrollToBottom();
       return;
     }
@@ -1582,7 +1573,7 @@ export class ClaudeChatView extends ItemView {
 
       // Tool details (collapsible)
       const detailSummary = card.createDiv("cc-permission-detail-summary");
-      detailSummary.createSpan({ text: `${info.toolName}`, cls: "cc-permission-tool-name" });
+      detailSummary.createSpan({ text: info.toolName, cls: "cc-permission-tool-name" });
       const inputPreview = JSON.stringify(info.input, null, 2);
       if (inputPreview.length > 10) {
         const detailPre = card.createEl("pre", { cls: "cc-permission-input" });
@@ -2084,7 +2075,7 @@ export class ClaudeChatView extends ItemView {
       copyBtn.className = "cc-code-copy";
       copyBtn.textContent = "Copy";
       copyBtn.addEventListener("click", () => {
-        navigator.clipboard.writeText(code.textContent || "");
+        void navigator.clipboard.writeText(code.textContent || "");
         copyBtn.textContent = "Copied!";
         setTimeout(() => { copyBtn.textContent = "Copy"; }, 1500);
       });
@@ -2135,13 +2126,13 @@ export class ClaudeChatView extends ItemView {
 
   /** Reset textarea height to auto (used after sending) */
   private resetInputHeight(): void {
-    this.inputEl.setCssStyles({ "height": "auto" });
+    this.inputEl.setCssProps({ "--cc-input-height": "auto" });
   }
 
   /** Auto-resize textarea to fit content */
   private autoResizeInput(): void {
-    this.inputEl.setCssStyles({ "height": "auto" });
-    this.inputEl.setCssStyles({ "height": Math.min(this.inputEl.scrollHeight, 160) + "px" });
+    this.inputEl.setCssProps({ "--cc-input-height": "auto" });
+    this.inputEl.setCssProps({ "--cc-input-height": Math.min(this.inputEl.scrollHeight, 160) + "px" });
   }
 
   private scrollToBottom(): void {
@@ -2171,15 +2162,14 @@ export class ClaudeChatView extends ItemView {
   }
 
   private formatToolInput(name: string, input: Record<string, unknown>): string {
-    if ((name === "Read" || name === "Edit" || name === "Write") && input.file_path) {
-      return typeof input.file_path === "string" ? input.file_path : "".split("/").pop() || "";
+    if ((name === "Read" || name === "Edit" || name === "Write") && typeof input.file_path === "string") {
+      return input.file_path.split("/").pop() || "";
     }
-    if (name === "Bash" && input.command) {
-      const cmd = typeof input.command === "string" ? input.command : "";
-      return cmd.length > 50 ? cmd.slice(0, 50) + "…" : cmd;
+    if (name === "Bash" && typeof input.command === "string") {
+      return input.command.length > 50 ? input.command.slice(0, 50) + "…" : input.command;
     }
-    if (name === "Grep" && input.pattern) return `/${typeof input.pattern === "string" ? input.pattern : ""}/`;
-    if (name === "Glob" && input.pattern) return typeof input.pattern === "string" ? input.pattern : "";
+    if (name === "Grep" && typeof input.pattern === "string") return `/${input.pattern}/`;
+    if (name === "Glob" && typeof input.pattern === "string") return input.pattern;
     return "";
   }
 }

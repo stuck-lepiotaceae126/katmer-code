@@ -347,6 +347,7 @@
   resize: none;
   min-height: 24px;
   max-height: 160px;
+  height: var(--cc-input-height, auto);
   padding: 12px 14px 6px;
   box-sizing: border-box;
 }

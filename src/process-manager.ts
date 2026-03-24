@@ -1,5 +1,5 @@
 import { spawn, execFileSync } from "child_process";
-import { join, dirname } from "path";
+import { join } from "path";
 import { existsSync } from "fs";
 import { homedir, userInfo } from "os";
 import type {
@@ -247,8 +247,6 @@ export class ProcessManager {
    * required methods including once() from EventEmitter.
    */
   private createCustomSpawn(): (options: SpawnOptions) => SpawnedProcess {
-    const enhancedPath = getEnhancedPath();
-
     return (options: SpawnOptions): SpawnedProcess => {
       let { command } = options;
       let spawnArgs = [...options.args];
@@ -348,11 +346,11 @@ export class ProcessManager {
         });
         if (result === "allow" || result === "always") {
           return {
-            behavior: "allow" as const,
+            behavior: "allow",
             updatedPermissions: result === "always" ? opts.suggestions : undefined,
           };
         }
-        return { behavior: "deny" as const, message: "User denied" };
+        return { behavior: "deny", message: "User denied" };
       } : undefined,
     };
 

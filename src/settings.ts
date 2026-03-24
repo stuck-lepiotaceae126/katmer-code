@@ -14,8 +14,7 @@ export class ClaudeNativeSettingTab extends PluginSettingTab {
     const { containerEl } = this;
     containerEl.empty();
 
-    
-    
+    new Setting(containerEl).setName("Claude Code").setHeading();
 
     new Setting(containerEl)
       .setName("CLI path")
@@ -24,9 +23,9 @@ export class ClaudeNativeSettingTab extends PluginSettingTab {
         text
           .setPlaceholder("claude")
           .setValue(this.plugin.settings.cliPath)
-          .onChange(async (value) => {
+          .onChange((value) => {
             this.plugin.settings.cliPath = value;
-            await this.plugin.saveSettings();
+            void this.plugin.saveSettings();
           })
       );
 
@@ -37,9 +36,9 @@ export class ClaudeNativeSettingTab extends PluginSettingTab {
         text
           .setPlaceholder("/path/to/project")
           .setValue(this.plugin.settings.workingDirectory)
-          .onChange(async (value) => {
+          .onChange((value) => {
             this.plugin.settings.workingDirectory = value;
-            await this.plugin.saveSettings();
+            void this.plugin.saveSettings();
           })
       );
 
@@ -55,9 +54,9 @@ export class ClaudeNativeSettingTab extends PluginSettingTab {
             haiku: "Haiku (fast, 200K context)",
           })
           .setValue(this.plugin.settings.defaultModel)
-          .onChange(async (value) => {
+          .onChange((value) => {
             this.plugin.settings.defaultModel = value as ModelChoice;
-            await this.plugin.saveSettings();
+            void this.plugin.saveSettings();
           })
       );
 
@@ -72,9 +71,9 @@ export class ClaudeNativeSettingTab extends PluginSettingTab {
             bypassPermissions: "Bypass all (auto-approve everything)",
           })
           .setValue(this.plugin.settings.permissionMode)
-          .onChange(async (value) => {
+          .onChange((value) => {
             this.plugin.settings.permissionMode = value as PermissionMode;
-            await this.plugin.saveSettings();
+            void this.plugin.saveSettings();
           })
       );
 
@@ -82,9 +81,9 @@ export class ClaudeNativeSettingTab extends PluginSettingTab {
       .setName("Allow web requests")
       .setDesc("Auto-approve WebFetch, WebSearch, curl, python3, and open commands. Required for academic skills (/lit-search, /cite-verify, etc.)")
       .addToggle((toggle) =>
-        toggle.setValue(this.plugin.settings.allowWebRequests).onChange(async (value) => {
+        toggle.setValue(this.plugin.settings.allowWebRequests).onChange((value) => {
           this.plugin.settings.allowWebRequests = value;
-          await this.plugin.saveSettings();
+          void this.plugin.saveSettings();
         })
       );
 
@@ -92,9 +91,9 @@ export class ClaudeNativeSettingTab extends PluginSettingTab {
       .setName("Show tool calls")
       .setDesc("Display tool call panels (Read, Edit, Bash, etc.)")
       .addToggle((toggle) =>
-        toggle.setValue(this.plugin.settings.showToolCalls).onChange(async (value) => {
+        toggle.setValue(this.plugin.settings.showToolCalls).onChange((value) => {
           this.plugin.settings.showToolCalls = value;
-          await this.plugin.saveSettings();
+          void this.plugin.saveSettings();
         })
       );
 
@@ -102,9 +101,9 @@ export class ClaudeNativeSettingTab extends PluginSettingTab {
       .setName("Show cost info")
       .setDesc("Display token usage and cost in the status bar")
       .addToggle((toggle) =>
-        toggle.setValue(this.plugin.settings.showCostInfo).onChange(async (value) => {
+        toggle.setValue(this.plugin.settings.showCostInfo).onChange((value) => {
           this.plugin.settings.showCostInfo = value;
-          await this.plugin.saveSettings();
+          void this.plugin.saveSettings();
         })
       );
 
@@ -119,7 +118,7 @@ export class ClaudeNativeSettingTab extends PluginSettingTab {
     new Setting(containerEl)
       .setName("Bulk actions")
       .addButton((btn) =>
-        btn.setButtonText("Enable all").onClick(async () => {
+        btn.setButtonText("Enable all").onClick(() => {
           this.plugin.settings.enabledSkills = SKILL_CATALOG.map(s => s.id);
           if (!this.plugin.settings.allowWebRequests) {
             this.plugin.settings.allowWebRequests = true;
@@ -127,15 +126,15 @@ export class ClaudeNativeSettingTab extends PluginSettingTab {
           } else {
             new Notice(`${SKILL_CATALOG.length} skills enabled`);
           }
-          await this.plugin.saveSettings();
+          void this.plugin.saveSettings();
           this.plugin.syncSkills();
           this.display();
         })
       )
       .addButton((btn) =>
-        btn.setButtonText("Disable all").onClick(async () => {
+        btn.setButtonText("Disable all").onClick(() => {
           this.plugin.settings.enabledSkills = [];
-          await this.plugin.saveSettings();
+          void this.plugin.saveSettings();
           this.plugin.syncSkills();
           new Notice("All skills disabled");
           this.display();
@@ -158,7 +157,7 @@ export class ClaudeNativeSettingTab extends PluginSettingTab {
           .setName(skill.name)
           .setDesc(skill.description)
           .addToggle((toggle) =>
-            toggle.setValue(enabled).onChange(async (value) => {
+            toggle.setValue(enabled).onChange((value) => {
               if (value) {
                 if (!this.plugin.settings.enabledSkills.includes(skill.id)) {
                   this.plugin.settings.enabledSkills.push(skill.id);
@@ -171,7 +170,7 @@ export class ClaudeNativeSettingTab extends PluginSettingTab {
                 this.plugin.settings.enabledSkills =
                   this.plugin.settings.enabledSkills.filter(id => id !== skill.id);
               }
-              await this.plugin.saveSettings();
+              void this.plugin.saveSettings();
               this.plugin.syncSkills();
             })
           );

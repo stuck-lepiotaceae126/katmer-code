@@ -83,9 +83,10 @@ export default class ClaudeNativePlugin extends Plugin {
     this.addCommand({
       id: "new-claude-session",
       name: "New Claude Code session",
-      callback: async () => {
-        await this.activateView();
-        this.getChatView()?.startNewSession();
+      callback: () => {
+        void this.activateView().then(() => {
+          this.getChatView()?.startNewSession();
+        }).catch(() => { /* view activation handled */ });
       },
     });
 
