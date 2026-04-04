@@ -86,7 +86,7 @@ export default class ClaudeNativePlugin extends Plugin {
       callback: () => {
         void this.activateView().then(() => {
           this.getChatView()?.startNewSession();
-        }).catch(() => { /* view activation handled */ });
+        });
       },
     });
 
@@ -153,7 +153,7 @@ export default class ClaudeNativePlugin extends Plugin {
   async openReport(filePath: string): Promise<void> {
     const leaf = this.app.workspace.getLeaf("tab");
     await leaf.setViewState({ type: VIEW_TYPE_REPORT, active: true });
-    const rv = leaf.view as unknown as ReportView;
+    const rv = leaf.view as ReportView;
     if (rv?.loadReport) await rv.loadReport(filePath);
     this.app.workspace.revealLeaf(leaf);
   }

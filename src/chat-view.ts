@@ -353,7 +353,8 @@ export class ClaudeChatView extends ItemView {
     };
 
     this.modelBtns = {} as Record<ModelChoice, HTMLElement>;
-    for (const key of ["opus[1m]", "opus", "sonnet", "haiku"] as ModelChoice[]) {
+    const modelKeys: ModelChoice[] = ["opus[1m]", "opus", "sonnet", "haiku"];
+    for (const key of modelKeys) {
       const item = popup.createDiv("cc-popup-item" + (key === this.pm.model ? " is-active" : ""));
       item.createDiv({ cls: "cc-popup-item-name", text: MODEL_LABELS[key] });
       item.createDiv({ cls: "cc-popup-item-desc", text: MODEL_DESCS[key] });
@@ -375,7 +376,8 @@ export class ClaudeChatView extends ItemView {
     const effortRow = effortSection.createDiv("cc-popup-effort-row");
 
     this.effortBtns = {} as Record<EffortLevel, HTMLElement>;
-    for (const key of ["low", "medium", "high", "max"] as EffortLevel[]) {
+    const effortKeys: EffortLevel[] = ["low", "medium", "high", "max"];
+    for (const key of effortKeys) {
       const pill = effortRow.createEl("button", {
         cls: "cc-pill" + (key === this.pm.effort ? " is-active" : ""),
         text: EFFORT_LABELS[key],
@@ -425,8 +427,8 @@ export class ClaudeChatView extends ItemView {
         }
         if ((e.key === "Enter" || e.key === "Tab") && items.length > 0) {
           e.preventDefault();
-          const selected = items[this.skillSelectedIdx] as HTMLElement;
-          if (selected) this.applySkillCompletion(selected.dataset.skill || "");
+          const selected = items[this.skillSelectedIdx] as HTMLElement | undefined;
+          if (selected?.dataset.skill) this.applySkillCompletion(selected.dataset.skill);
           return;
         }
         if (e.key === "Escape") {
@@ -463,12 +465,12 @@ export class ClaudeChatView extends ItemView {
           const ext = item.type.split("/")[1] || "png";
           const tmpName = `paste-${Date.now()}.${ext}`;
           const tmpPath = join(tmpdir(), tmpName);
-          void blob.arrayBuffer().then((ab) => {
+          void blob.arrayBuffer().then((ab: ArrayBuffer) => {
             const buffer = Buffer.from(ab);
             writeFileSync(tmpPath, buffer);
             this.attachedImages.push({ path: tmpPath, name: tmpName });
             this.renderAttachmentCards();
-          }).catch(() => { /* paste handling failed */ });
+          });
         }
       }
     });
@@ -701,8 +703,8 @@ export class ClaudeChatView extends ItemView {
       el.toggleClass("is-selected", i === this.skillSelectedIdx);
     });
     // Scroll into view
-    const selected = items[this.skillSelectedIdx] as HTMLElement;
-    if (selected) selected.scrollIntoView({ block: "nearest" });
+    const selected = items[this.skillSelectedIdx] as HTMLElement | undefined;
+    selected?.scrollIntoView({ block: "nearest" });
   }
 
   private applySkillCompletion(skillName: string): void {
@@ -1432,7 +1434,7 @@ export class ClaudeChatView extends ItemView {
 
   private handleSystemEvent(event: SystemInitEvent): void {
     // Compact boundary — show separator in chat
-    if ((event as unknown as { subtype: string }).subtype === "compact_boundary") {
+    if ((event as { subtype: string }).subtype === "compact_boundary") {
       const divider = this.chatContainer.createDiv("cc-compact-divider");
       divider.createDiv("cc-compact-line");
       divider.createSpan({ cls: "cc-compact-label", text: "Context compacted" });
@@ -1498,7 +1500,7 @@ export class ClaudeChatView extends ItemView {
       if (content && Array.isArray(content)) {
         for (const block of content) {
           if (block.type === "tool_use" && block.name) {
-            this.updateProgress(block.name, block.input as Record<string, unknown>, true);
+            this.updateProgress(block.name, block.input || {}, true);
           }
         }
       }
@@ -1599,7 +1601,7 @@ export class ClaudeChatView extends ItemView {
         const tc: ToolCallInfo = {
           id: toolId,
           name: block.name,
-          input: (block.input as Record<string, unknown>) || {},
+          input: block.input || {},
           startTime: Date.now(),
         };
         this.currentAssistantMsg.toolCalls!.push(tc);
@@ -1607,7 +1609,7 @@ export class ClaudeChatView extends ItemView {
         if (tc.name === "Edit" || this.settings.showToolCalls) {
           this.renderToolCall(el, tc);
         }
-        this.updateProgress(block.name, block.input as Record<string, unknown>);
+        this.updateProgress(block.name, block.input || {});
       } else if (block.type === "tool_result") {
         const resultText = typeof block.content === "string"
           ? block.content
@@ -1619,7 +1621,7 @@ export class ClaudeChatView extends ItemView {
           targetTool.result = resultText;
           targetTool.isError = block.is_error;
           // Update tool status in DOM
-          const toolEl = el.querySelector(`[data-tool-id="${targetTool.id}"] .cc-tool-status.is-running`) as HTMLElement;
+          const toolEl: HTMLElement | null = el.querySelector(`[data-tool-id="${targetTool.id}"] .cc-tool-status.is-running`);
           if (toolEl) {
             toolEl.removeClass("is-running");
             toolEl.addClass("is-done");
@@ -1647,11 +1649,10 @@ export class ClaudeChatView extends ItemView {
         this.session.cacheReadTokens = event.usage.cache_read_input_tokens || 0;
         this.session.cacheCreationTokens = event.usage.cache_creation_input_tokens || 0;
       }
-      // Extract context window size from modelUsage
-      const raw = event as unknown as Record<string, unknown>;
-      if (raw.modelUsage && typeof raw.modelUsage === "object") {
-        const models = raw.modelUsage as Record<string, { contextWindow?: number }>;
-        for (const m of Object.values(models)) {
+      // Extract context window size from modelUsage (attached by process-manager)
+      const raw = event as ResultEvent & { modelUsage?: Record<string, { contextWindow?: number }> };
+      if (raw.modelUsage) {
+        for (const m of Object.values(raw.modelUsage)) {
           if (m.contextWindow) this.session.contextWindow = m.contextWindow;
         }
       }
@@ -1908,7 +1909,7 @@ export class ClaudeChatView extends ItemView {
     if (lastSeg?.type === "text" && lastSeg.text && lastSeg.text !== this.lastRenderedText) {
       // Find the last text body element
       const bodies = el.querySelectorAll(".claude-native-msg-body");
-      const lastBody = bodies[bodies.length - 1] as HTMLElement | null;
+      const lastBody = bodies[bodies.length - 1] as HTMLElement | undefined;
       if (lastBody) {
         lastBody.empty();
         MarkdownRenderer.render(this.app, lastSeg.text, lastBody, "", this);

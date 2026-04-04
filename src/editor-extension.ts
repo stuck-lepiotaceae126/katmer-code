@@ -2,7 +2,7 @@ import { StateField, StateEffect, RangeSetBuilder } from "@codemirror/state";
 import { Decoration, DecorationSet, WidgetType, EditorView } from "@codemirror/view";
 import * as DiffMatchPatchModule from "diff-match-patch";
 
-const DiffMatchPatch = (DiffMatchPatchModule as unknown as { default: typeof DiffMatchPatchModule }).default || DiffMatchPatchModule;
+const DiffMatchPatch = (DiffMatchPatchModule as { default?: typeof DiffMatchPatchModule }).default || DiffMatchPatchModule;
 const dmp = new DiffMatchPatch();
 
 // ══════════════════════════════════════

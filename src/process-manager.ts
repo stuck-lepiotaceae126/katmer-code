@@ -53,7 +53,7 @@ class UserMessageChannel implements AsyncIterable<SDKUserMessage> {
   close(): void {
     this.closed = true;
     if (this.waiting) {
-      this.waiting({ value: undefined as unknown as SDKUserMessage, done: true });
+      this.waiting({ value: undefined!, done: true });
       this.waiting = null;
     }
   }
@@ -65,7 +65,7 @@ class UserMessageChannel implements AsyncIterable<SDKUserMessage> {
           return Promise.resolve({ value: this.queue.shift()!, done: false });
         }
         if (this.closed) {
-          return Promise.resolve({ value: undefined as unknown as SDKUserMessage, done: true });
+          return Promise.resolve({ value: undefined!, done: true });
         }
         return new Promise((resolve) => {
           this.waiting = resolve;
@@ -266,7 +266,7 @@ export class ProcessManager {
 
       const child = spawn(command, spawnArgs, {
         cwd,
-        env: env as NodeJS.ProcessEnv,
+        env: env as typeof process.env,
         stdio: ["pipe", "pipe", "pipe"],
         windowsHide: true,
         // DO NOT pass signal — Electron's AbortSignal realm mismatch
@@ -527,7 +527,7 @@ export class ProcessManager {
 
         // Attach modelUsage for context window extraction
         if (rMsg.modelUsage) {
-          (event as unknown as Record<string, unknown>).modelUsage = rMsg.modelUsage;
+          Object.assign(event, { modelUsage: rMsg.modelUsage });
         }
 
         this.onEvent?.(event);
@@ -551,6 +551,7 @@ export class ProcessManager {
 
       case "stream_event": {
         // Partial streaming — extract text delta for live rendering
+        // SDK's stream_event type requires double assertion (BetaRawMessageStreamEvent is not index-compatible)
         const streamMsg = msg as unknown as { type: "stream_event"; event: Record<string, unknown>; parent_tool_use_id: string | null };
 
         // Subagent text streams are skipped (chat-view handles subagent tool calls via assistant events)
@@ -627,7 +628,7 @@ export class ProcessManager {
 
     // Kill everything — next send() will create a new query
     if (this.activeQuery) {
-      this.activeQuery.interrupt().catch(() => {});
+      void this.activeQuery.interrupt().catch(() => {});
     }
     this.abortController?.abort();
     this.channel?.close();
